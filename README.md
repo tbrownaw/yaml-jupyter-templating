@@ -21,6 +21,41 @@ pip install -r requirements.lock
 python3 run_template.py sample.yaml
 ```
 
+# Syntax
+
+This can do three (four) things.
+
+* Execute code with no return value:
+  ```
+  (* code goes here *)
+  ```
+* Execute code and insert the result object:
+  ```
+  key: (! x = {}; x['foo'] = bar; x !)
+  ```
+* Splat an array or oject
+   ```
+   - arrayval_1
+   - (@ [ "arrayval_2", "arrayval_3" ] @)
+   ---
+   key1: val1
+   this_key_is_arbitrary_and_ignored: |
+     (@
+     x = {'splatkey_1': 'splatval_1'}
+     x['splatkey_2'] = 'splatval_2'
+     x
+     @)
+   key4: val4
+   ```
+
+If you don't want the default `python3` kernel (or just want to be explicit), you can specify which one to use:
+```
+key: |
+  (!kernelname
+  code goes here
+  !)
+```
+
 # TODO
 
 - make it recurse
