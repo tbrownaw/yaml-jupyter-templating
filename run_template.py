@@ -26,12 +26,6 @@ class empty_ctx:
     def __exit__(self, type, value, traceback):
         pass
 
-def ctx_for(name):
-    if name in KERNEL_SETUP_CTXS:
-        return KERNEL_SETUP_CTXS[name]()
-    else:
-        return empty_ctx()
-
 @kernel_ctx_for("python3")
 class kernel_ctx_python3:
     def __init__(self):
@@ -46,6 +40,16 @@ class kernel_ctx_python3:
             os.environ['PYDEVD_DISABLE_FILE_VALIDATION'] = self.oldval
         else:
             del os.environ['PYDEVD_DISABLE_FILE_VALIDATION']
+
+def ctx_for(name):
+    """
+    Some kernels might want thing tweaked before being forked.
+    So far it's just python3, but might as well write it to allow for others.
+    """
+    if name in KERNEL_SETUP_CTXS:
+        return KERNEL_SETUP_CTXS[name]()
+    else:
+        return empty_ctx()
 
 MY_KERNELS = {}
 def get_kernel_for(lang_str: str):
@@ -63,6 +67,11 @@ def shutdown_kernels():
 
 
 def evaluate(lang_str: str, content_str: str):
+    """
+    Take a string of code in a particular language, and turn it
+    into yaml parse events. If there is no return value, return None
+    rather than an empty list or anything like [DocumentStartEvent, DocumentEndEvent]
+    """
     if not lang_str:
         #print("No language specified; using python3")
         lang_str = "python3"
@@ -119,7 +128,7 @@ def evaluate(lang_str: str, content_str: str):
         # object into yaml events. Worst case would be to serialize to yaml and
         # then parse for events, but eww.
         #
-        # Also, do different kernels use different formats? That's be a royal pain. 
+        # Also, do different kernels use different formats? That'd be a royal pain. 
         return yaml.parse(rslt)
     if rslt_type == None:
         return None
@@ -174,11 +183,13 @@ def maybe_do_subst(event, context_event):
             raise ValueError("no-return substitution returned a value")
         return True, isinstance(context_event, yaml.MappingStartEvent), []
     elif type_char == '@':
+        # Splat
         myevents = eval_result_events
         splat_mapping = isinstance(context_event, yaml.MappingStartEvent)
         myevents = trim_start_end(myevents, splat_mapping)
         return True, splat_mapping, myevents
     elif type_char == '!':
+        # Replace the string with the returned object
         return True, False, trim_start_end(eval_result_events, False, True)
     raise AssertionError("Fell of the end of a function. This should not be possible.")
 
