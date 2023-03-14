@@ -1,0 +1,35 @@
+---
+---
+(* print("foo") *)
+---
+|
+   (*python3
+   def fn():
+     print("fn")
+   fn()
+   *)
+---
+foo: bar
+fnord: "baz"
+xyzzy: 123
+aaa: |
+  a
+  b
+  c
+zys:
+- aa: aa
+  bb: bb
+- cc: cc
+  dd: dd
+- "(@ x = ['arr_splat_1', { 'arr_splat_obj' : 'arr_splat_obj_value' }]; x.append('arr_splat_2'); x @)"
+- ee: ee
+- |
+    (@
+    ['arr_splat_a', 'arr_splat_b']
+    @)
+qwerty: "(! {'obj_value' : 'yep'} !)"
+splatkey: "(@ {'splatted_a' : 'val_a', 'splatted_b' : 'val_b'} @)"
+bigexpr: |
+  (*
+  print("done")
+  *)
