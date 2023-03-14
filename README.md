@@ -10,6 +10,17 @@ TODO: go find that rant about the C preprocessor and I think it was hygenic macr
 
 TODO: proper description of indent-level issues in for example Helm.
 
+# Run
+
+Make sure Jupyter is installed, and has at least the `python3` kernel that I think is in the default install.
+
+```
+python3 -mvenv env
+. env/bin/activate
+pip install -r requirements.lock
+python3 run_template.py sample.yaml
+```
+
 # TODO
 
 - make it recurse
